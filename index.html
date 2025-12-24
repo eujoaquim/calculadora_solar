@@ -12,6 +12,26 @@
         <form id="solarForm">
             <input type="text" id="cidade" placeholder="Ex: São Paulo, SP" required>
             <input type="number" id="consumo" placeholder="Consumo mensal (kWh)" required>
+            <h3>Características do Telhado</h3>
+
+<label>Área disponível (m²):</label>
+<input type="number" id="area" placeholder="Ex: 20" min="5" max="200">
+
+<label>Inclinação:</label>
+<select id="inclinacao">
+    <option value="15">Baixa (15°)</option>
+    <option value="20" selected>Média (20°)</option>
+    <option value="30">Alta (30°)</option>
+</select>
+
+<label>Orientação:</label>
+<select id="orientacao">
+    <option value="-45">Nordeste (-45°)</option>
+    <option value="0" selected>Norte (0°)</option>
+    <option value="45">Noroeste (45°)</option>
+    <option value="90">Oeste (90°)</option>
+    <option value="-90">Leste (-90°)</option>
+</select>
             <button type="submit">Calcular</button>
         </form>
         <div id="resultado"></div>
