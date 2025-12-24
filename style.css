@@ -3,3 +3,27 @@ body { font-family: Arial; max-width: 500px; margin: 40px auto; padding: 20px; }
 input, button { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; }
 button { background: #2ecc71; color: white; border: none; cursor: pointer; }
 #resultado { margin-top: 20px; padding: 15px; background: #e8f6ef; }
+.result-item {
+    background: white;
+    margin: 10px 0;
+    padding: 10px;
+    border-left: 4px solid #2ecc71;
+    border-radius: 4px;
+}
+
+.alerta {
+    border-left: 4px solid #e74c3c;
+    background: #ffeaea;
+}
+
+.sucesso {
+    border-left: 4px solid #2ecc71;
+    background: #e8f6ef;
+}
+
+.dica {
+    font-size: 0.9em;
+    color: #666;
+    font-style: italic;
+    margin-top: 5px;
+}
