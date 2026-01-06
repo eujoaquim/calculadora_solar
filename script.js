@@ -1,4 +1,4 @@
-console.log("PVGIS TESTE ATIVO");
+console.log("SCRIPT JS CARREGADO");
 document.getElementById("formSolar").addEventListener("submit", async function (e) {
     e.preventDefault();
 
