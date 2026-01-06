@@ -1,3 +1,4 @@
+console.log("PVGIS TESTE ATIVO");
 document.getElementById("formSolar").addEventListener("submit", async function (e) {
     e.preventDefault();
 
