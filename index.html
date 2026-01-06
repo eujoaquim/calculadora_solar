@@ -1,41 +1,79 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora Solar</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Calculadora Solar Residencial</title>
+
+    <!-- CSS externo -->
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Calculadora Solar Simplificada</h1>
-        <form id="solarForm">
-            <input type="text" id="cidade" placeholder="Ex: São Paulo, SP" required>
-            <input type="number" id="consumo" placeholder="Consumo mensal (kWh)" required>
-            <h3>Características do Telhado</h3>
 
-<label>Área disponível (m²):</label>
-<input type="number" id="area" placeholder="Ex: 20" min="5" max="200">
+<header>
+    <h1>Calculadora de Energia Solar</h1>
+    <p>Estimativa residencial para o Brasil</p>
+</header>
 
-<label>Inclinação:</label>
-<select id="inclinacao">
-    <option value="15">Baixa (15°)</option>
-    <option value="20" selected>Média (20°)</option>
-    <option value="30">Alta (30°)</option>
-</select>
+<main>
 
-<label>Orientação:</label>
-<select id="orientacao">
-    <option value="-45">Nordeste (-45°)</option>
-    <option value="0" selected>Norte (0°)</option>
-    <option value="45">Noroeste (45°)</option>
-    <option value="90">Oeste (90°)</option>
-    <option value="-90">Leste (-90°)</option>
-</select>
+    <section>
+        <h2>Dados do Imóvel</h2>
+
+        <form id="formSolar">
+            <label>
+                Latitude
+                <input type="number" id="latitude" step="0.0001" required>
+            </label>
+
+            <label>
+                Longitude
+                <input type="number" id="longitude" step="0.0001" required>
+            </label>
+
+            <label>
+                Consumo médio mensal (kWh)
+                <input type="number" id="consumo" required>
+            </label>
+
+            <label>
+                Área disponível do telhado (m²)
+                <input type="number" id="area" required>
+            </label>
+
+            <label>
+                Inclinação do telhado (graus)
+                <input type="number" id="inclinacao" required>
+            </label>
+
+            <label>
+                Orientação do telhado
+                <select id="orientacao">
+                    <option value="norte">Norte</option>
+                    <option value="leste">Leste</option>
+                    <option value="oeste">Oeste</option>
+                    <option value="sul">Sul</option>
+                </select>
+            </label>
+
             <button type="submit">Calcular</button>
         </form>
-        <div id="resultado"></div>
-    </div>
-    <script src="script.js"></script>
+    </section>
+
+    <section>
+        <h2>Resultado</h2>
+        <div id="resultado">
+            Preencha os dados e calcule.
+        </div>
+    </section>
+
+</main>
+
+<footer>
+    © 2026 - Simulador Solar
+</footer>
+
+<!-- JS externo -->
+<script src="js/script.js"></script>
 </body>
 </html>
