@@ -16,7 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         console.log("FORM DATA:", { lat, lon, consumo, area, inclinacao, orientacao });
 
-        // 6 m² ≈ 1 kWp
         const potencia = area / 6;
 
         let azimute = 0;
@@ -40,28 +39,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
             const response = await fetch(url);
-            console.log("RESPONSE STATUS:", response.status);
-
             const data = await response.json();
-            console.log("PVGIS RESPONSE:", data);
+
+            console.log("PVGIS RAW RESPONSE ↓↓↓");
+            console.log(JSON.stringify(data, null, 2));
 
             let producaoAnual = null;
 
-            // ✅ CASO 1 — PVcalc (SEU CASO ATUAL)
-            if (data?.outputs?.totals?.fixed?.E_y) {
-                producaoAnual = data.outputs.totals.fixed.E_y;
-                console.log("Usando PVcalc (E_y)");
-            }
+            // 🔍 BUSCA ROBUSTA — tenta TODOS os formatos conhecidos
+            producaoAnual =
+                data?.outputs?.totals?.fixed?.E_y ??
+                data?.outputs?.totals?.E_y ??
+                data?.outputs?.E_y ??
+                data?.outputs?.totals?.fixed?.energy_year ??
+                null;
 
-            // ✅ CASO 2 — seriescalc (se mudar depois)
-            else if (Array.isArray(data?.outputs?.monthly)) {
-                producaoAnual = data.outputs.monthly
-                    .reduce((soma, m) => soma + m.E_m, 0);
-                console.log("Usando seriescalc (monthly)");
-            }
-
-            if (!producaoAnual) {
-                throw new Error("Produção anual não encontrada em nenhum formato");
+            if (!producaoAnual || isNaN(producaoAnual)) {
+                throw new Error("Produção anual não encontrada no JSON");
             }
 
             const producaoMensal = producaoAnual / 12;
@@ -78,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (err) {
             console.error("ERRO FINAL:", err);
             resultadoDiv.innerHTML =
-                "❌ Erro ao calcular. Veja o console (F12).";
+                "❌ Erro ao calcular. Abra o console (F12).";
         }
     });
 });
