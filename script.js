@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await response.json();
             console.log("PVGIS RESPONSE:", data);
 
-            const producaoAnual = data?.outputs?.totals?.fixed?.E_y;
+            const producaoAnual = data?.outputs?.series?.[0]?.yearly_energy;
 
             if (!producaoAnual) {
                 throw new Error("Produção anual não encontrada");
