@@ -1,65 +1,82 @@
+// Confirma que o JavaScript está carregando
 console.log("SCRIPT JS CARREGADO");
 
-document.getElementById("formSolar").addEventListener("submit", async function (e) {
-    e.preventDefault();
+// Garante que o DOM está pronto antes de acessar elementos
+document.addEventListener("DOMContentLoaded", () => {
 
-    const lat = document.getElementById("latitude").value;
-    const lon = document.getElementById("longitude").value;
-    const consumo = Number(document.getElementById("consumo").value);
-    const area = Number(document.getElementById("area").value);
-    const inclinacao = document.getElementById("inclinacao").value;
-    const orientacao = document.getElementById("orientacao").value;
-
+    const form = document.getElementById("formSolar");
     const resultadoDiv = document.getElementById("resultado");
 
-    // Área -> potência (kWp)
-    const potencia = area / 6;
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-    // Orientação -> azimute PVGIS
-    let azimute = 0;
-    if (orientacao === "norte") azimute = 180;
-    if (orientacao === "leste") azimute = -90;
-    if (orientacao === "oeste") azimute = 90;
-    if (orientacao === "sul") azimute = 0;
+        // Captura dos valores do formulário
+        const lat = document.getElementById("latitude").value;
+        const lon = document.getElementById("longitude").value;
+        const consumo = Number(document.getElementById("consumo").value);
+        const area = Number(document.getElementById("area").value);
+        const inclinacao = document.getElementById("inclinacao").value;
+        const orientacao = document.getElementById("orientacao").value;
 
-    resultadoDiv.innerHTML = "Consultando dados reais do PVGIS...";
+        // Conversão área -> potência instalada (kWp)
+        // Regra prática: ~6 m² por kWp
+        const potencia = area / 6;
 
-    const url =
-        "https://re.jrc.ec.europa.eu/api/v5_2/seriescalc" +
-        `?lat=${lat}` +
-        `&lon=${lon}` +
-        `&peakpower=${potencia}` +
-        `&loss=20` +
-        `&angle=${inclinacao}` +
-        `&aspect=${azimute}` +
-        `&outputformat=json`;
+        // Conversão da orientação para azimute no padrão PVGIS
+        let azimute = 0;
+        if (orientacao === "norte") azimute = 180;
+        if (orientacao === "leste") azimute = -90;
+        if (orientacao === "oeste") azimute = 90;
+        if (orientacao === "sul") azimute = 0;
 
-    try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error("Falha na API");
+        resultadoDiv.innerHTML = "Consultando dados reais do PVGIS...";
 
-        const data = await response.json();
+        // Endpoint CORRETO para uso em frontend
+        const url =
+            "https://re.jrc.ec.europa.eu/api/v5_2/seriescalc" +
+            `?lat=${lat}` +
+            `&lon=${lon}` +
+            `&peakpower=${potencia}` +
+            `&loss=20` +
+            `&angle=${inclinacao}` +
+            `&aspect=${azimute}` +
+            `&outputformat=json`;
 
-        // Forma MAIS estável de obter produção anual
-        const anual = data?.outputs?.totals?.fixed?.E_y;
+        try {
+            const response = await fetch(url);
 
-        if (!anual) {
-            throw new Error("Resposta inesperada do PVGIS");
+            if (!response.ok) {
+                throw new Error("Falha ao acessar o PVGIS");
+            }
+
+            const data = await response.json();
+
+            // Forma MAIS estável de obter produção anual (kWh/ano)
+            const producaoAnual = data?.outputs?.totals?.fixed?.E_y;
+
+            if (!producaoAnual) {
+                throw new Error("Resposta inesperada do PVGIS");
+            }
+
+            // Conversão para média mensal
+            const producaoMensal = producaoAnual / 12;
+
+            // Percentual de cobertura do consumo
+            const cobertura = (producaoMensal / consumo) * 100;
+
+            // Exibição do resultado
+            resultadoDiv.innerHTML = `
+                <strong>Potência estimada do sistema:</strong> ${potencia.toFixed(2)} kWp<br>
+                <strong>Geração média mensal:</strong> ${producaoMensal.toFixed(1)} kWh<br>
+                <strong>Consumo informado:</strong> ${consumo} kWh/mês<br>
+                <strong>Cobertura do consumo:</strong> ${cobertura.toFixed(1)}%<br><br>
+                <em>Dados reais obtidos do PVGIS (Comissão Europeia).</em>
+            `;
+
+        } catch (erro) {
+            console.error("Erro ao consultar o PVGIS:", erro);
+            resultadoDiv.innerHTML =
+                "Erro ao consultar o PVGIS. Verifique os dados ou veja o console.";
         }
-
-        const mensal = anual / 12;
-        const cobertura = (mensal / consumo) * 100;
-
-        resultadoDiv.innerHTML = `
-            <strong>Potência estimada:</strong> ${potencia.toFixed(2)} kWp<br>
-            <strong>Geração média mensal:</strong> ${mensal.toFixed(1)} kWh<br>
-            <strong>Consumo informado:</strong> ${consumo} kWh/mês<br>
-            <strong>Cobertura do consumo:</strong> ${cobertura.toFixed(1)}%<br><br>
-            <em>Dados reais do PVGIS (Comissão Europeia).</em>
-        `;
-    } catch (erro) {
-        console.error("Erro PVGIS:", erro);
-        resultadoDiv.innerHTML =
-            "Erro ao consultar o PVGIS. Veja o console para detalhes.";
-    }
+    });
 });
