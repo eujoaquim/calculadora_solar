@@ -1,3 +1,12 @@
+const url =
+  "https://pvgis-proxy.yumenosakiko49.workers.dev" +
+  `?lat=${lat}` +
+  `&lon=${lon}` +
+  `&peakpower=${potencia}` +
+  `&loss=20` +
+  `&angle=${inclinacao}` +
+  `&aspect=${azimute}`;
+
 // Confirma que o JavaScript está carregando
 console.log("SCRIPT JS CARREGADO");
 
